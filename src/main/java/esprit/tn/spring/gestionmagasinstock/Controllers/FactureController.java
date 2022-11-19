@@ -3,10 +3,7 @@ package esprit.tn.spring.gestionmagasinstock.Controllers;
 import esprit.tn.spring.gestionmagasinstock.Entities.Facture;
 import esprit.tn.spring.gestionmagasinstock.Services.IFactureService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +23,14 @@ public class FactureController {
     @GetMapping("/getOne/{id}")
     public Facture retrieveFacture(@PathVariable(value = "id") Long id){
         return factureService.retrieveFacture(id);
+    }
+    @GetMapping("/getFacturesByClient/{idC}")
+    public List<Facture> getFacturesByClient(@PathVariable(value = "idC") Long idClient){
+        return factureService.getFacturesByClient(idClient);
+    }
+    @PostMapping("/addFacturetoClient/{idC}")
+    public Facture addFacturetoClient(@RequestBody Facture f,@PathVariable(value = "idC") Long idClient){
+        factureService.addFacture(f,idClient);
+        return f;
     }
 }

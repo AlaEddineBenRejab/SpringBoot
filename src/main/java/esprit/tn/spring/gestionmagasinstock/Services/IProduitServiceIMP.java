@@ -1,16 +1,11 @@
 package esprit.tn.spring.gestionmagasinstock.Services;
 
-import esprit.tn.spring.gestionmagasinstock.Entities.Fournisseur;
-import esprit.tn.spring.gestionmagasinstock.Entities.Produit;
-import esprit.tn.spring.gestionmagasinstock.Entities.Rayon;
-import esprit.tn.spring.gestionmagasinstock.Entities.Stock;
-import esprit.tn.spring.gestionmagasinstock.Repositories.FournisseurRepository;
-import esprit.tn.spring.gestionmagasinstock.Repositories.ProduitRepository;
-import esprit.tn.spring.gestionmagasinstock.Repositories.RayonRepository;
-import esprit.tn.spring.gestionmagasinstock.Repositories.StockRepository;
+import esprit.tn.spring.gestionmagasinstock.Entities.*;
+import esprit.tn.spring.gestionmagasinstock.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 @Service
 public class IProduitServiceIMP implements IProduitService{
@@ -22,6 +17,11 @@ public class IProduitServiceIMP implements IProduitService{
     StockRepository stockRepository;
     @Autowired
     FournisseurRepository fournisseurRepository;
+    @Autowired
+    DetailFactureRepository detailFactureRepository;
+    @Autowired
+    FactureRepository factureRepository;
+
     @Override
     public List<Produit> retrieveAllProduits() {
         return produitRepository.findAll();
@@ -64,5 +64,22 @@ public class IProduitServiceIMP implements IProduitService{
             p.getFournisseurs().add(f);
             produitRepository.save(p);
         }
+    }
+
+    @Override
+    public float getRevenuBrutProduit(Long idProduit, Date startDate, Date endDate) {
+        Produit p = produitRepository.findById(idProduit).get();
+        float prix=0;
+        for(DetailFacture df:detailFactureRepository.findAll()){
+            if(df.getProduit().equals(p)){
+                if(factureRepository.findByDetailFactures(df).getDateFacture().before(endDate)
+                        &&factureRepository.findByDetailFactures(df).getDateFacture().after(startDate)){
+                    prix=prix + (p.getPrixUnitaire()*df.getQte());
+                }
+
+            }
+        }
+
+        return prix;
     }
 }

@@ -36,6 +36,8 @@ public class IFactureServiceIMP implements IFactureService{
 
     @Override
     public Facture addFacture(Facture f, Long idClient) {
-        return null;
+        Client c= clientRepository.findById(idClient).get();
+        c.getFactures().add(f);
+        return f;
     }
 }
